@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Recent applications &mdash; Nepal Relief Funds{% endblock %}
+{% block content %}
+
+<main class="wrap" style="padding:48px 24px;">
+  <section id="recent">
+    <div class="section-head">
+      <h2>Recent applications</h2>
+      <p>A public log of recent requests, shown for transparency. ID numbers and full addresses are never shown here.</p>
+    </div>
+    <div class="card" id="recentList">
+      {% if recent %}
+        {% for a in recent %}
+          <div class="app-card">
+            <div>
+              <div class="name">{{ a.first_name }} {{ a.last_initial }}.</div>
+              <div class="meta">{{ a.region }} &middot; {{ a.timestamp.strftime('%b %-d, %Y') }}</div>
+              <div class="needs">{{ a.needs_summary }}</div>
+            </div>
+            <div>
+              <div class="amount">NPR {{ "{:,.0f}".format(a.total) }}</div>
+              <span class="status-pill{% if a.status=='Approved' %} approved{% elif a.status=='Declined' %} declined{% endif %}">{{ a.status }}</span>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div style="padding:20px 22px;" class="empty-note">No applications submitted yet. Be the first.</div>
+      {% endif %}
+    </div>
+  </section>
+</main>
+
+{% endblock %}

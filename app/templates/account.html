@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}My account &mdash; Nepal Relief Funds{% endblock %}
+{% block content %}
+
+<main class="wrap" style="padding:48px 24px;">
+  <section id="account">
+    <div class="section-head">
+      <h2>Your account</h2>
+      <p>All of your applications and their status, in one place.</p>
+    </div>
+
+    <div class="card">
+      <div class="account-box">
+        <div class="account-head">
+          <div class="avatar">{{ current_user.initial }}</div>
+          <div>
+            <div class="who">{{ current_user.full_name }}{% if current_user.is_admin %}<span class="admin-tag">Admin</span>{% endif %}</div>
+            <div class="uname">@{{ current_user.username }}</div>
+          </div>
+          <a class="logout-btn" href="{{ url_for('auth.logout') }}">Log out</a>
+        </div>
+        <div class="section-head" style="margin-bottom:14px;">
+          <h3 style="font-size:16px;margin:0 0 4px;">My applications</h3>
+        </div>
+        {% with successes = get_flashed_messages(category_filter=['payout_success']) %}
+          {% if successes %}<div class="flash-success" style="margin-bottom:14px;">{{ successes[0] }}</div>{% endif %}
+        {% endwith %}
+        {% with errors = get_flashed_messages(category_filter=['payout_error']) %}
+          {% if errors %}<ul class="flash-list" style="margin-bottom:14px;">{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+        {% endwith %}
+        <div>
+          {% if my_applications %}
+            {% for app in my_applications %}
+              <div class="app-card" style="padding:14px 0;flex-direction:column;align-items:stretch;gap:10px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                  <div>
+                    <div class="name">{{ app.ref_id }}</div>
+                    <div class="needs">{{ app.needs_summary }}</div>
+                  </div>
+                  <div>
+                    <div class="amount">NPR {{ "{:,.0f}".format(app.total) }}</div>
+                    <span class="status-pill{% if app.status=='Approved' %} approved{% elif app.status=='Declined' %} declined{% endif %}">{{ app.status }}</span>
+                  </div>
+                </div>
+                {% if app.status == 'Approved' %}
+                  {% if app.account_number %}
+                    <div class="notice">Payout account on file, ending {{ app.account_number[-4:] }}. Funds will be sent there.</div>
+                  {% else %}
+                    <form method="post" action="{{ url_for('main.submit_payout', ref_id=app.ref_id) }}" style="display:flex;gap:10px;">
+                      <input type="text" name="account_number" placeholder="Bank account number to receive funds" required style="flex:1;">
+                      <button type="submit" class="save-status">Save</button>
+                    </form>
+                  {% endif %}
+                {% endif %}
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="empty-note">You haven't submitted an application yet. <a href="{{ url_for('main.apply') }}">Start one</a>.</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+{% endblock %}

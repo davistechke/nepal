@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}Apply &mdash; Nepal Relief Funds{% endblock %}
+{% block content %}
+
+<main class="wrap" style="padding:48px 24px;">
+  <section id="apply">
+    <div class="section-head">
+      <h2>Application</h2>
+      <p>Every field below is used to verify your identity and assess your request. Fill it in as completely as you can.</p>
+    </div>
+
+    {% with successes = get_flashed_messages(category_filter=['apply_success']) %}
+      {% if successes %}
+        <div class="confirm" style="margin-bottom:16px;">
+          <div class="ref">{{ successes[0] }}</div>
+          <p>Save this reference number. Check <a href="{{ url_for('main.account') }}">your account</a> to see its status.</p>
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form class="card" id="reliefForm" method="post" action="{{ url_for('main.apply') }}">
+      {% with errors = get_flashed_messages(category_filter=['apply_error']) %}
+        {% if errors %}<ul class="flash-list" style="margin-bottom:20px;">{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+      {% endwith %}
+
+      <div class="field-group">
+        <div class="field-num"><span class="n">1</span><span class="t">Applicant details</span></div>
+        <label class="sub" for="fullName">Full legal name</label>
+        <input type="text" id="fullName" name="full_name" placeholder="As it appears on your ID or passport"
+               value="{{ current_user.full_name if current_user.is_authenticated else '' }}">
+      </div>
+
+      <div class="field-group">
+        <label class="sub" for="phone">Phone number</label>
+        <input type="tel" id="phone" name="phone" placeholder="+977 98XXXXXXXX">
+        <div class="field-hint">Include the country code, e.g. +977 98XXXXXXXX.</div>
+      </div>
+
+      <div class="field-group">
+        <div class="field-num"><span class="n">2</span><span class="t">Identification</span></div>
+        <div class="radio-row">
+          <label><input type="radio" name="id_type" value="National ID" checked> National ID</label>
+          <label><input type="radio" name="id_type" value="Passport"> Passport</label>
+        </div>
+        <label class="sub" for="idNumber">ID or passport number</label>
+        <input type="text" id="idNumber" name="id_number" placeholder="e.g. 12-34-56-78901">
+      </div>
+
+      <div class="field-group">
+        <div class="field-num"><span class="n">3</span><span class="t">Address</span></div>
+        <label class="sub" for="address">Current home address</label>
+        <textarea id="address" name="address" placeholder="Ward, municipality, district, province"></textarea>
+      </div>
+
+      <div class="field-group">
+        <div class="field-num"><span class="n">4</span><span class="t">What was affected</span></div>
+        <div class="field-hint">List each item or type of damage separately, with the funds needed to address it (NPR).</div>
+        <div class="needs-list" id="needsList"></div>
+        <button type="button" class="add-need" id="addNeed">+ Add another item</button>
+      </div>
+
+      <div class="total-row">
+        <span class="label">Total funds requested</span>
+        <span class="amount" id="totalAmount">NPR 0</span>
+      </div>
+
+      <div class="submit-row">
+        <button type="submit" class="btn">Submit application</button>
+        <span class="empty-note">Takes about 3 minutes.</span>
+      </div>
+    </form>
+  </section>
+
+  <div class="notice" style="margin-top:24px;">
+    This is a prototype. Do not submit a real ID or passport number here &mdash; a production version of this system would need a secure backend, identity verification, and a data-protection process before collecting documents like these.
+  </div>
+</main>
+
+<script>
+let needCounter = 0;
+function addNeedRow(name, amount){
+  needCounter++;
+  const row = document.createElement('div');
+  row.className = 'need-row';
+  row.innerHTML = `
+    <input type="text" name="need_item[]" placeholder="e.g. Roof damage, lost livestock" class="need-name" value="${name || ''}">
+    <input type="number" name="need_amount[]" placeholder="NPR amount" min="0" class="need-amount" value="${amount || ''}">
+    <button type="button" title="Remove">&times;</button>
+  `;
+  row.querySelector('button').onclick = () => { row.remove(); updateTotal(); };
+  row.querySelector('.need-amount').addEventListener('input', updateTotal);
+  document.getElementById('needsList').appendChild(row);
+}
+addNeedRow();
+document.getElementById('addNeed').onclick = () => addNeedRow();
+
+function updateTotal(){
+  const amounts = [...document.querySelectorAll('.need-amount')].map(i => parseFloat(i.value) || 0);
+  const total = amounts.reduce((a,b) => a+b, 0);
+  document.getElementById('totalAmount').textContent = 'NPR ' + total.toLocaleString('en-US');
+}
+</script>
+
+{% endblock %}

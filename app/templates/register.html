@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Create account &mdash; Nepal Relief Funds{% endblock %}
+{% block content %}
+
+<main class="wrap" style="padding:48px 24px;">
+  <section id="register">
+    <div class="section-head">
+      <h2>Create account</h2>
+      <p>Create an account to see all of your applications and their status in one place.</p>
+    </div>
+
+    <div class="card">
+      <div class="auth-tabs">
+        <a class="auth-tab" href="{{ url_for('auth.login') }}">Log in</a>
+        <span class="auth-tab active">Create account</span>
+      </div>
+
+      <form class="auth-form active" method="post" action="{{ url_for('auth.register') }}">
+        {% with errors = get_flashed_messages(category_filter=['register_error']) %}
+          {% if errors %}<ul class="flash-list">{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+        {% endwith %}
+        <div class="field-group">
+          <label class="sub" for="regName">Full name</label>
+          <input type="text" id="regName" name="full_name" placeholder="Your full name">
+        </div>
+        <div class="field-group">
+          <label class="sub" for="regUsername">Choose a username</label>
+          <input type="text" id="regUsername" name="username" placeholder="lowercase letters and numbers">
+        </div>
+        <div class="field-group">
+          <label class="sub" for="regPassword">Choose a password</label>
+          <input type="password" id="regPassword" name="password" placeholder="At least 6 characters">
+        </div>
+        <div class="field-group">
+          <label class="sub" for="regConfirm">Confirm password</label>
+          <input type="password" id="regConfirm" name="confirm" placeholder="Type it again">
+        </div>
+        <button type="submit" class="btn">Create account</button>
+      </form>
+    </div>
+
+    <div class="notice" style="margin-top:12px;">
+      Passwords are hashed before storing. This is still a prototype &mdash; use a throwaway password, not one you use elsewhere.
+      Already have an account? <a href="{{ url_for('auth.login') }}">Log in here</a>.
+    </div>
+  </section>
+</main>
+
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="hero">
+  <svg class="mountains" viewBox="0 0 1000 90" preserveAspectRatio="none">
+    <path d="M0 90 L120 30 L200 60 L320 10 L430 55 L560 20 L680 65 L800 25 L900 58 L1000 35 L1000 90 Z" fill="#12283F"/>
+  </svg>
+  <div class="wrap">
+    <h1>Apply for relief funds after a disaster in Nepal.</h1>
+    <p>Tell us who you are, where you live, and what you lost. We use this to route aid to the households and communities that need it most.</p>
+    <div class="hero-actions">
+      <a href="{{ url_for('main.apply') }}" class="btn btn-primary">Start an application</a>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+  <section id="links">
+    <div class="section-head">
+      <h2>What would you like to do?</h2>
+      <p>Every part of the process now has its own page.</p>
+    </div>
+
+    <div class="card" style="padding:8px 0;">
+      {% if current_user.is_authenticated %}
+        <div class="app-card">
+          <div>
+            <div class="name">My account</div>
+            <div class="meta">See your applications and their status.</div>
+          </div>
+          <div><a class="btn" href="{{ url_for('main.account') }}">Go &rarr;</a></div>
+        </div>
+      {% else %}
+        <div class="app-card">
+          <div>
+            <div class="name">Log in</div>
+            <div class="meta">Already have an account? Sign in here.</div>
+          </div>
+          <div><a class="btn" href="{{ url_for('auth.login') }}">Go &rarr;</a></div>
+        </div>
+        <div class="app-card">
+          <div>
+            <div class="name">Create an account</div>
+            <div class="meta">Track all your applications in one place.</div>
+          </div>
+          <div><a class="btn" href="{{ url_for('auth.register') }}">Go &rarr;</a></div>
+        </div>
+      {% endif %}
+      <div class="app-card">
+        <div>
+          <div class="name">Apply</div>
+          <div class="meta">Start a new relief fund application.</div>
+        </div>
+        <div><a class="btn" href="{{ url_for('main.apply') }}">Go &rarr;</a></div>
+      </div>
+      {% if current_user.is_authenticated and current_user.is_admin %}
+      <div class="app-card">
+        <div>
+          <div class="name">Recent applications</div>
+          <div class="meta">See a log of recent requests.</div>
+        </div>
+        <div><a class="btn" href="{{ url_for('admin.recent') }}">Go &rarr;</a></div>
+      </div>
+      {% endif %}
+    </div>
+  </section>
+
+  <div class="notice" style="margin-top:24px;">
+    This is a prototype. Do not submit a real ID or passport number here &mdash; a production version of this system would need a secure backend, identity verification, and a data-protection process before collecting documents like these.
+  </div>
+</main>
+
+{% endblock %}

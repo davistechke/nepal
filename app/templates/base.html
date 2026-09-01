@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Nepal Relief Funds{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="brand">
+      <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+        <path d="M2 24L9 10L13 17L17 6L28 24H2Z" fill="#D98E2B"/>
+      </svg>
+      <a href="{{ url_for('main.index') }}" style="text-decoration:none;color:inherit;">
+        <div class="brand-text">Nepal Relief Funds<span>Community disaster aid</span></div>
+      </a>
+    </div>
+    <nav>
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('main.account') }}">{{ current_user.full_name.split(' ')[0] }}</a>
+      {% else %}
+        <a href="{{ url_for('auth.login') }}">Log in</a>
+      {% endif %}
+      <a href="{{ url_for('main.apply') }}">Apply</a>
+      {% if current_user.is_authenticated and current_user.is_admin %}
+        <a href="{{ url_for('admin.recent') }}">Recent applications</a>
+        <a href="{{ url_for('admin.admin_panel') }}">Admin</a>
+      {% endif %}
+    </nav>
+  </div>
+</header>
+
+{% block content %}{% endblock %}
+
+<footer>
+  <div class="wrap">
+    <span>Nepal Relief Funds &mdash; community aid coordination</span>
+    <span>Prototype build, not affiliated with any government body</span>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Admin review &mdash; Nepal Relief Funds{% endblock %}
+{% block content %}
+
+<main class="wrap" style="padding-top:48px;">
+  <section id="admin">
+    <div class="section-head">
+      <h2>Admin review</h2>
+      <p>Staff-only view of full applicant details, so a reviewer can approve or decline each request.</p>
+    </div>
+
+    {% with successes = get_flashed_messages(category_filter=['admin_success']) %}
+      {% if successes %}<div class="flash-success">{{ successes[0] }}</div>{% endif %}
+    {% endwith %}
+
+    <div class="card">
+      <div class="admin-summary">
+        <span>{{ applications|length }} application{{ 's' if applications|length != 1 else '' }}</span>
+        <span>NPR {{ "{:,.0f}".format(total_requested) }} requested</span>
+      </div>
+      <div>
+        {% if applications %}
+          {% for app in applications %}
+            <div class="admin-row">
+              <div>
+                <div class="name">{{ app.full_name }} <span style="color:var(--ink-soft);font-weight:400;">({{ app.ref_id }})</span></div>
+                <div class="meta">{{ app.phone }} &middot; {{ app.id_type }} {{ app.id_number }} &middot; {{ app.address }}</div>
+                <div class="needs">
+                  {% for n in app.needs %}{{ n.item }} (NPR {{ "{:,.0f}".format(n.amount) }}){% if not loop.last %}, {% endif %}{% endfor %}
+                </div>
+                {% if app.account_number %}
+                  <div class="meta">Payout account: {{ app.account_number }}</div>
+                {% endif %}
+              </div>
+              <div class="amount">NPR {{ "{:,.0f}".format(app.total) }}</div>
+              <form class="status-control" method="post" action="{{ url_for('admin.admin_update_status', ref_id=app.ref_id) }}">
+                <select name="status">
+                  <option {% if app.status=='Under review' %}selected{% endif %}>Under review</option>
+                  <option {% if app.status=='Approved' %}selected{% endif %}>Approved</option>
+                  <option {% if app.status=='Declined' %}selected{% endif %}>Declined</option>
+                </select>
+                <button type="submit" class="save-status">Save status</button>
+              </form>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div style="padding:20px 22px;" class="empty-note">No applications submitted yet.</div>
+        {% endif %}
+      </div>
+    </div>
+    <div class="notice" style="margin-top:12px;">
+      Access to this page is restricted to accounts with admin privileges (see README for how to create one).
+    </div>
+  </section>
+</main>
+
+{% endblock %}

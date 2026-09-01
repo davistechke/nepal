@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: nepal-relief-funds
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn wsgi:app
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ADMIN_USERNAME
+        value: admin
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: ADMIN_FULL_NAME
+        value: Administrator
+    # SQLite works out of the box but resets on every deploy on Render's
+    # free tier (its filesystem isn't persistent). For real hosting, attach
+    # a Render Postgres database and it will be picked up automatically
+    # through the DATABASE_URL env var Render injects.
