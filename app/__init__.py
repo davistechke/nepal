@@ -117,3 +117,10 @@ def _register_cli(app):
         db.session.add(user)
         db.session.commit()
         print(f"Admin account '{username}' created.")
+
+
+# A ready-to-serve instance, built eagerly at import time, so both of these
+# work no matter which one your host is configured to run:
+#   gunicorn app:app     (imports this package, uses this variable)
+#   gunicorn wsgi:app     (wsgi.py imports this same variable)
+app = create_app()

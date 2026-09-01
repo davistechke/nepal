@@ -2,8 +2,9 @@ services:
   - type: web
     name: nepal-relief-funds
     env: python
+    plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn wsgi:app
+    startCommand: gunicorn app:app
     envVars:
       - key: SECRET_KEY
         generateValue: true
@@ -13,7 +14,7 @@ services:
         sync: false
       - key: ADMIN_FULL_NAME
         value: Administrator
-    # SQLite works out of the box but resets on every deploy on Render's
-    # free tier (its filesystem isn't persistent). For real hosting, attach
-    # a Render Postgres database and it will be picked up automatically
-    # through the DATABASE_URL env var Render injects.
+    # No database or disk block here on purpose - both require a paid plan
+    # on Render. SQLite works out of the box on the free plan; it just
+    # resets on every redeploy since the free plan's filesystem isn't
+    # persistent. That's fine for a demo/prototype like this one.
